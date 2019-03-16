@@ -4,7 +4,7 @@ $fn=50;
 
 JOINER_SIZE_X = 10;
 
-HANDLE_SIZE_X = 150 - JOINER_SIZE_X;
+HANDLE_SIZE_X = 110 - JOINER_SIZE_X;
 HANDLE_SIZE_Y = 40;
 HANDLE_SIZE_Z = 20;
 HANDLE_THICKNESS = 4;
@@ -12,7 +12,9 @@ HANDLE_THICKNESS = 4;
 BLADE_SIZE_X = 100;
 BLADE_SIZE_Y = HANDLE_SIZE_Y*(0.6);
 BLADE_SIZE_Z = 10;
+BLADE_VERT_ANGLE = -7;
 
+JOINER_OUTER_SIZE_Y = 14;
 JOINER_SIZE_Y = 10;
 
 module handle() {
@@ -41,12 +43,22 @@ module handle() {
 module blade() {
   JL = 10;
   BLADE_OFFSET_Z = 5;
+  JOINER_SHROUD_EXTRA_X = 1;
   difference() {
-    translate([-JL,HANDLE_THICKNESS/2,BLADE_OFFSET_Z])
-      rotate([0,0,90])
-        half_joiner2(h=HANDLE_SIZE_Z, w=JOINER_SIZE_Y, l=JL);
+    rotate([0,BLADE_VERT_ANGLE,0])
+      translate([-JL,HANDLE_THICKNESS/2,BLADE_OFFSET_Z])
+        union() {
+          rotate([0,0,90])
+            half_joiner2(h=HANDLE_SIZE_Z, w=JOINER_SIZE_Y, l=JL);
+          difference() {
+            translate([(JL+JOINER_SHROUD_EXTRA_X)/2,0,0])
+              cube([JL+JOINER_SHROUD_EXTRA_X, JOINER_OUTER_SIZE_Y, HANDLE_SIZE_Z], center=true);
+            translate([JL/2,0,0])
+              cube([JL, JOINER_SIZE_Y, HANDLE_SIZE_Z], center=true);
+          }
+        }
     translate([0,0,-500])
-    cube(1000, center=true);
+      cube(1000, center=true);
   }
   scale([BLADE_SIZE_X,BLADE_SIZE_Y,BLADE_SIZE_Z]) {
     difference() {
@@ -67,3 +79,5 @@ translate([0,-30,0])
 blade();
 translate([0,-60,0])
 blade();
+
+JL = 10;
